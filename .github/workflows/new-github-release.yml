@@ -11,7 +11,6 @@
 name: New GitHub Release
 
 on:
-  workflow_dispatch:
   push:
     tags:
       - 'v*'
