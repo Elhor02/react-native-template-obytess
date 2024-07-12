@@ -11,7 +11,7 @@
 name: New GitHub Release
 
 on:
-  push:
+  create:
     tags:
       - 'v*'
 
