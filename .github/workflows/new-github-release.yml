@@ -12,9 +12,7 @@ name: New GitHub Release
 
 on:
   create:
-    tags:
-      - '**'
-
+    
 jobs:
   release:
     name: New GitHub Release
