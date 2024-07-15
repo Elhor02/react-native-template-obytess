@@ -2,7 +2,7 @@ name: 'dev Build and deploy .apk to Firebase App Distribution '
 
 on:
   release:
-    types: [published]
+    types: [created, published]
 
 jobs:
   build:
