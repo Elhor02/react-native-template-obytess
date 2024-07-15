@@ -1,0 +1,48 @@
+name: Build iOS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'
+
+    - name: Install pnpm
+      run: npm install -g pnpm
+
+    - name: Install dependencies using pnpm
+      run: pnpm install
+
+    - name: Install CocoaPods
+      run: |
+        sudo gem install cocoapods
+        cd ios
+        pod install
+
+    - name: Build iOS
+      run: |
+        xcodebuild -workspace ios/react-native-template-obytess.xcworkspace -scheme react-native-template-obytess -sdk iphoneos -configuration Release archive -archivePath $PWD/build/react-native-template-obytess.xcarchive
+        xcodebuild -exportArchive -archivePath $PWD/build/react-native-template-obytess.xcarchive -exportOptionsPlist ios/exportOptions.plist -exportPath $PWD/build
+
+    - name: Upload .ipa file
+      uses: actions/upload-artifact@v2
+      with:
+        name: react-native-template-obytess.ipa
+        path: build/react-native-template-obytess.ipa
+
+    - name: upload artifact to Firebase App Distribution
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
+      with:
+        appId: ${{secrets.ANDROID_FIREBASE_APP_ID}}
+        serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+        groups: Dev
+        file: build/react-native-template-obytess.ipa
