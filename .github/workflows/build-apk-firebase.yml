@@ -3,7 +3,9 @@ name: 'dev Build and deploy .apk to Firebase App Distribution '
 on:
   release:
     types: [created, published]
-
+  workflow_run:
+    workflows: ["New GitHub Release"]
+    types: [completed]
 jobs:
   build:
     runs-on: ubuntu-latest
