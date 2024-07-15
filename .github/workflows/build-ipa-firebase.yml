@@ -16,28 +16,35 @@ jobs:
       with:
         node-version: '18'
 
+    - name: Cache CocoaPods
+      uses: actions/cache@v2
+      with:
+        path: ~/.cocoapods
+        key: cocoa-pods-${{ runner.os }}-${{ hashFiles('**/Podfile.lock') }}
+        restore-keys: |
+          cocoa-pods-${{ runner.os }}-
+    
     - name: Install pnpm
       run: npm install -g pnpm
 
     - name: Install dependencies using pnpm
       run: pnpm install
 
-    - name: Install CocoaPods
+    - name: Install CocoaPods dependencies
       run: |
-        sudo gem install cocoapods
         cd ios
         pod install
 
     - name: Build iOS
       run: |
-        xcodebuild -workspace ios/react-native-template-obytess.xcworkspace -scheme react-native-template-obytess -sdk iphoneos -configuration Release archive -archivePath $PWD/build/react-native-template-obytess.xcarchive
-        xcodebuild -exportArchive -archivePath $PWD/build/react-native-template-obytess.xcarchive -exportOptionsPlist ios/exportOptions.plist -exportPath $PWD/build
+        xcodebuild -workspace ios/ObytesApp.xcworkspace -scheme ObytesApp -sdk iphoneos -configuration Release archive -archivePath $PWD/build/ObytesApp.xcarchive
+        xcodebuild -exportArchive -archivePath $PWD/build/ObytesApp.xcarchive -exportOptionsPlist ios/exportOptions.plist -exportPath $PWD/build
 
     - name: Upload .ipa file
       uses: actions/upload-artifact@v2
       with:
-        name: react-native-template-obytess.ipa
-        path: build/react-native-template-obytess.ipa
+        name: ObytesApp.ipa
+        path: build/ObytesApp.ipa
 
     - name: upload artifact to Firebase App Distribution
       uses: wzieba/Firebase-Distribution-Github-Action@v1
@@ -45,4 +52,4 @@ jobs:
         appId: ${{secrets.ANDROID_FIREBASE_APP_ID}}
         serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
         groups: Dev
-        file: build/react-native-template-obytess.ipa
+        file: build/ObytesApp.ipa
